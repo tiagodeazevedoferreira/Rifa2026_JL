@@ -2,11 +2,28 @@
 
 let jogadores = [];
 let selecoes = {};
+let filtroAtual = 'todos';
+
+// ============================================================
+// 🏷️ MAPA DE NOMES DAS RIFAS
+// Aqui você pode personalizar o nome exibido de cada rifa.
+// A chave deve ser IGUAL ao valor da coluna "album" na planilha.
+// Exemplo: se na planilha está "1994", aqui você define o nome bonito.
+// ============================================================
+const NOMES_RIFAS = {
+  "1994": "Seleção 1994",
+  "2002": "Seleção 2002",
+  "2006": "Copa 2006",
+  "premier": "Premier League",
+  // Adicione novas rifas aqui conforme forem criadas na planilha
+};
+
+function getNomeRifa(album) {
+  return NOMES_RIFAS[album] || album; // Se não tiver mapeamento, usa o valor original
+}
 
 // === LINK DA PLANILHA ===
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSMPaIQXBxkimPsUhKxEnUjjKUiifsLhhMX1gYlVJVFk5d6dgTESOJmwb-6qwMEG1morC-IbIOIopZF/pub?gid=0&single=true&output=csv";
-
-// Proxy CORS para contornar bloqueio do navegador
 const PROXY_URL = "https://api.allorigins.win/raw?url=" + encodeURIComponent(CSV_URL);
 
 console.log("🔄 Iniciando carregamento da planilha...");
@@ -32,7 +49,7 @@ fetch(PROXY_URL)
       return {
         id: id || `j${index}`,
         jogador: jogador || "Jogador sem nome",
-        album: album || "Álbum não informado",
+        album: album || "Sem rifa",
         linkDrive: getDirectDriveLink(linkDrive)
       };
     });
@@ -63,27 +80,51 @@ fetch(PROXY_URL)
 function carregarReservas() {
   db.ref('reservas').on('value', snapshot => {
     selecoes = snapshot.val() || {};
+    renderFiltros();
     renderCards();
   });
+}
+
+function renderFiltros() {
+  const container = document.getElementById('filtros');
+  if (!container) return;
+
+  const albumsUnicos = ['todos', ...new Set(jogadores.map(j => j.album))];
+
+  container.innerHTML = albumsUnicos.map(album => {
+    const label = album === 'todos' ? '🏆 Todos' : getNomeRifa(album);
+    const ativo = filtroAtual === album ? 'ativo' : '';
+    return `<button class="filtro-btn ${ativo}" onclick="setFiltro('${album}')">${label}</button>`;
+  }).join('');
+}
+
+function setFiltro(album) {
+  filtroAtual = album;
+  renderFiltros();
+  renderCards();
 }
 
 function renderCards() {
   const grid = document.getElementById('grid');
   grid.innerHTML = '';
 
-  if (jogadores.length === 0) {
-    grid.innerHTML = '<p style="text-align:center; padding:50px;">Nenhum jogador encontrado na planilha.</p>';
+  const jogadoresFiltrados = filtroAtual === 'todos'
+    ? jogadores
+    : jogadores.filter(j => j.album === filtroAtual);
+
+  if (jogadoresFiltrados.length === 0) {
+    grid.innerHTML = '<p style="text-align:center; padding:50px;">Nenhum jogador encontrado.</p>';
     return;
   }
 
-  jogadores.forEach(j => {
+  jogadoresFiltrados.forEach(j => {
     const isReservado = !!selecoes[j.id];
     const card = document.createElement('div');
     card.className = `card ${isReservado ? 'reservado' : ''}`;
     card.innerHTML = `
       <img src="${j.linkDrive}" alt="${j.jogador}" onerror="this.src='https://via.placeholder.com/300x200?text=Sem+Foto'">
       <h3>${j.jogador}</h3>
-      <p>${j.album}</p>
+      <p>${getNomeRifa(j.album)}</p>
     `;
     if (!isReservado) card.addEventListener('click', () => abrirModal(j));
     grid.appendChild(card);
@@ -94,7 +135,7 @@ let jogadorAtual = null;
 
 function abrirModal(j) {
   jogadorAtual = j;
-  document.getElementById('modal-title').textContent = `${j.jogador} - ${j.album}`;
+  document.getElementById('modal-title').textContent = `${j.jogador} - ${getNomeRifa(j.album)}`;
   document.getElementById('modal-img').src = j.linkDrive;
   document.getElementById('nome').value = '';
   document.getElementById('whatsapp').value = '';
