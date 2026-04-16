@@ -70,7 +70,7 @@ document.getElementById('confirm-btn').addEventListener('click', confirmarSeleca
 document.getElementById('cancel-btn').addEventListener('click', fecharModal);
 
 document.getElementById('copiar-pix-btn').addEventListener('click', () => {
-  const chavePix = "SUA_CHAVE_PIX_AQUI";   // ← Troque pela sua chave PIX real
+  const chavePix = "22095090845";   // ← Troque pela sua chave PIX real
   navigator.clipboard.writeText(chavePix).then(() => {
     alert("Código PIX copiado com sucesso!\n\nValor: R$ 25,00\nEnvie o comprovante para o organizador.");
   });
