@@ -1,4 +1,4 @@
-// ================== RIFA JL 2026 - app.js (versão corrigida - 16/04/2026) ==================
+// ================== RIFA JL 2026 - app.js ==================
 
 let jogadores = [];
 let selecoes = {};
@@ -6,12 +6,15 @@ let selecoes = {};
 // === LINK DA PLANILHA ===
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSMPaIQXBxkimPsUhKxEnUjjKUiifsLhhMX1gYlVJVFk5d6dgTESOJmwb-6qwMEG1morC-IbIOIopZF/pub?gid=0&single=true&output=csv";
 
+// Proxy CORS para contornar bloqueio do navegador
+const PROXY_URL = "https://api.allorigins.win/raw?url=" + encodeURIComponent(CSV_URL);
+
 console.log("🔄 Iniciando carregamento da planilha...");
 
-fetch(CSV_URL, { mode: 'cors' })
+fetch(PROXY_URL)
   .then(res => {
     console.log("📡 Status da resposta:", res.status, res.statusText);
-    if (!res.ok) throw new Error(`HTTP ${res.status} - Planilha não acessível publicamente`);
+    if (!res.ok) throw new Error(`HTTP ${res.status} - Planilha não acessível`);
     return res.text();
   })
   .then(csv => {
@@ -109,7 +112,7 @@ document.getElementById('confirm-btn').addEventListener('click', confirmarSeleca
 document.getElementById('cancel-btn').addEventListener('click', fecharModal);
 
 document.getElementById('copiar-pix-btn').addEventListener('click', () => {
-  const chavePix = "22095090845";   // Seu CPF já está aqui
+  const chavePix = "22095090845";
   navigator.clipboard.writeText(chavePix).then(() => {
     alert("✅ Código PIX copiado com sucesso!\n\nValor: R$ 25,00\nEnvie o comprovante para o organizador.");
   });
