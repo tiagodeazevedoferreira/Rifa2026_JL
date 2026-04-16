@@ -1,82 +1,58 @@
-// ================== RIFA JL 2026 - app.js ==================
+// ================== RIFA JL 2026 ==================
 
 let jogadores = [];
 let selecoes = {};
 let filtroAtual = 'todos';
 
-// ============================================================
-// 🏷️ MAPA DE NOMES DAS RIFAS
-// Aqui você pode personalizar o nome exibido de cada rifa.
-// A chave deve ser IGUAL ao valor da coluna "album" na planilha.
-// Exemplo: se na planilha está "1994", aqui você define o nome bonito.
-// ============================================================
+// ================== NOMES DAS RIFAS ==================
 const NOMES_RIFAS = {
   "1994": "Seleção 1994",
   "2002": "Seleção 2002",
   "2006": "Copa 2006",
   "premier": "Premier League",
-  // Adicione novas rifas aqui conforme forem criadas na planilha
 };
 
 function getNomeRifa(album) {
-  return NOMES_RIFAS[album] || album; // Se não tiver mapeamento, usa o valor original
+  return NOMES_RIFAS[album] || album;
 }
 
-// === LINK DA PLANILHA ===
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSMPaIQXBxkimPsUhKxEnUjjKUiifsLhhMX1gYlVJVFk5d6dgTESOJmwb-6qwMEG1morC-IbIOIopZF/pub?gid=0&single=true&output=csv";
-const PROXY_URL = "https://api.allorigins.win/raw?url=" + encodeURIComponent(CSV_URL);
+// ================== CARREGAR JOGADORES (FIREBASE) ==================
+function carregarJogadores() {
+  console.log("🔄 Carregando jogadores do Firebase...");
 
-console.log("🔄 Iniciando carregamento da planilha...");
+  db.ref('jogadores').once('value')
+    .then(snapshot => {
+      const data = snapshot.val() || {};
 
-fetch(PROXY_URL)
-  .then(res => {
-    console.log("📡 Status da resposta:", res.status, res.statusText);
-    if (!res.ok) throw new Error(`HTTP ${res.status} - Planilha não acessível`);
-    return res.text();
-  })
-  .then(csv => {
-    console.log("📄 CSV recebido com", csv.length, "caracteres");
-    const lines = csv.trim().split('\n');
-    console.log("📋 Linhas detectadas:", lines.length);
+      jogadores = Object.keys(data).map(key => ({
+        id: key,
+        ...data[key]
+      }));
 
-    if (lines.length < 2) {
-      throw new Error("Planilha carregada, mas sem dados de jogadores.");
-    }
+      console.log(`✅ ${jogadores.length} jogadores carregados`);
 
-    jogadores = lines.slice(1).map((line, index) => {
-      const cols = line.split(',').map(s => s.trim().replace(/^"|"$/g, ''));
-      const [id, jogador, album, linkDrive] = cols;
-      return {
-        id: id || `j${index}`,
-        jogador: jogador || "Jogador sem nome",
-        album: album || "Sem rifa",
-        linkDrive: getDirectDriveLink(linkDrive)
-      };
+      carregarReservas();
+    })
+    .catch(err => {
+      console.error("❌ Erro ao carregar jogadores:", err);
+      mostrarErro(err.message);
     });
+}
 
-    console.log(`✅ ${jogadores.length} jogadores carregados com sucesso!`);
-    carregarReservas();
-  })
-  .catch(err => {
-    console.error("❌ Erro ao carregar planilha:", err);
-    const grid = document.getElementById('grid');
-    grid.style.minHeight = "400px";
-    grid.innerHTML = `
-      <div style="background:#ffebee; color:#c62828; border:3px solid #ef5350; border-radius:16px; padding:40px 30px; margin:30px auto; max-width:900px; text-align:center; font-size:18px; line-height:1.7;">
-        <h2>❌ Não foi possível carregar os jogadores</h2>
-        <p>${err.message}</p>
-        <p style="margin-top:20px; font-size:16px; color:#555;">
-          Possíveis causas:<br>
-          • A planilha não está totalmente pública<br>
-          • Problema temporário do Google<br>
-          • Cache do navegador
-        </p>
-        <button onclick="location.reload()" style="margin-top:25px; padding:12px 24px; font-size:16px; background:#1e3a8a; color:white; border:none; border-radius:8px; cursor:pointer;">
-          🔄 Tentar carregar novamente
-        </button>
-      </div>`;
-  });
+// ================== ERRO UI ==================
+function mostrarErro(msg) {
+  const grid = document.getElementById('grid');
 
+  grid.innerHTML = `
+    <div style="text-align:center; padding:40px;">
+      <h2>❌ Erro ao carregar jogadores</h2>
+      <p>${msg}</p>
+      <button onclick="location.reload()">Tentar novamente</button>
+    </div>
+  `;
+}
+
+// ================== RESERVAS ==================
 function carregarReservas() {
   db.ref('reservas').on('value', snapshot => {
     selecoes = snapshot.val() || {};
@@ -85,15 +61,16 @@ function carregarReservas() {
   });
 }
 
+// ================== FILTROS ==================
 function renderFiltros() {
   const container = document.getElementById('filtros');
-  if (!container) return;
 
   const albumsUnicos = ['todos', ...new Set(jogadores.map(j => j.album))];
 
   container.innerHTML = albumsUnicos.map(album => {
     const label = album === 'todos' ? '🏆 Todos' : getNomeRifa(album);
     const ativo = filtroAtual === album ? 'ativo' : '';
+
     return `<button class="filtro-btn ${ativo}" onclick="setFiltro('${album}')">${label}</button>`;
   }).join('');
 }
@@ -104,44 +81,47 @@ function setFiltro(album) {
   renderCards();
 }
 
+// ================== CARDS ==================
 function renderCards() {
   const grid = document.getElementById('grid');
   grid.innerHTML = '';
 
-  const jogadoresFiltrados = filtroAtual === 'todos'
+  const lista = filtroAtual === 'todos'
     ? jogadores
     : jogadores.filter(j => j.album === filtroAtual);
 
-  if (jogadoresFiltrados.length === 0) {
-    grid.innerHTML = '<p style="text-align:center; padding:50px;">Nenhum jogador encontrado.</p>';
-    return;
-  }
-
-  jogadoresFiltrados.forEach(j => {
+  lista.forEach(j => {
     const isReservado = !!selecoes[j.id];
+
     const card = document.createElement('div');
     card.className = `card ${isReservado ? 'reservado' : ''}`;
+
     card.innerHTML = `
-      <img src="${j.linkDrive}" alt="${j.jogador}" onerror="this.src='https://via.placeholder.com/300x200?text=Sem+Foto'">
+      <img src="${j.linkDrive}" 
+           onerror="this.src='https://via.placeholder.com/300x200?text=Sem+Foto'">
       <h3>${j.jogador}</h3>
       <p>${getNomeRifa(j.album)}</p>
     `;
-    if (!isReservado) card.addEventListener('click', () => abrirModal(j));
+
+    if (!isReservado) {
+      card.addEventListener('click', () => abrirModal(j));
+    }
+
     grid.appendChild(card);
   });
 }
 
+// ================== MODAL ==================
 let jogadorAtual = null;
 
 function abrirModal(j) {
   jogadorAtual = j;
-  document.getElementById('modal-title').textContent = `${j.jogador} - ${getNomeRifa(j.album)}`;
+
+  document.getElementById('modal-title').textContent =
+    `${j.jogador} - ${getNomeRifa(j.album)}`;
+
   document.getElementById('modal-img').src = j.linkDrive;
-  document.getElementById('nome').value = '';
-  document.getElementById('whatsapp').value = '';
-  document.getElementById('email').value = '';
-  document.getElementById('status-msg').innerHTML = '';
-  document.getElementById('pix-area').style.display = 'none';
+
   document.getElementById('modal').style.display = 'flex';
 }
 
@@ -149,28 +129,16 @@ function fecharModal() {
   document.getElementById('modal').style.display = 'none';
 }
 
-document.getElementById('confirm-btn').addEventListener('click', confirmarSelecao);
-document.getElementById('cancel-btn').addEventListener('click', fecharModal);
-
-document.getElementById('copiar-pix-btn').addEventListener('click', () => {
-  const chavePix = "22095090845";
-  navigator.clipboard.writeText(chavePix).then(() => {
-    alert("✅ Código PIX copiado com sucesso!\n\nValor: R$ 25,00\nEnvie o comprovante para o organizador.");
-  });
-});
-
+// ================== RESERVA ==================
 function confirmarSelecao() {
   const nome = document.getElementById('nome').value.trim();
   const whatsapp = document.getElementById('whatsapp').value.trim();
   const email = document.getElementById('email').value.trim();
 
-  if (!nome || whatsapp.length < 10 || !email) {
-    alert("Preencha todos os campos corretamente.\nWhatsApp deve ter 11 dígitos.");
+  if (!nome || !whatsapp || !email) {
+    alert("Preencha todos os campos.");
     return;
   }
-
-  let jaEscolheu = Object.values(selecoes).some(r => r.whatsapp === whatsapp);
-  if (jaEscolheu && !confirm("Este número já escolheu um jogador.\nDeseja escolher outro?")) return;
 
   const reserva = {
     jogadorId: jogadorAtual.id,
@@ -184,15 +152,17 @@ function confirmarSelecao() {
 
   db.ref('reservas/' + jogadorAtual.id).set(reserva)
     .then(() => {
-      document.getElementById('status-msg').innerHTML = `<span class="reservado-info">✅ Reservado com sucesso!</span>`;
-      document.getElementById('pix-area').style.display = 'block';
-      document.getElementById('valor-final').textContent = "25";
-      selecoes[jogadorAtual.id] = reserva;
-      renderCards();
-    })
-    .catch(err => alert("Erro ao reservar: " + err.message));
+      alert("✅ Reservado com sucesso!");
+    });
 }
 
+// ================== EVENTOS ==================
+document.getElementById('confirm-btn').addEventListener('click', confirmarSelecao);
+document.getElementById('cancel-btn').addEventListener('click', fecharModal);
+
+// ================== INIT ==================
+carregarJogadores();
+
 document.getElementById('modal').addEventListener('click', (e) => {
-  if (e.target === document.getElementById('modal')) fecharModal();
+  if (e.target.id === 'modal') fecharModal();
 });
