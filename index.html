@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rifa JL 2026 ⚽</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Rifa JL 2026 ⚽</h1>
+    <p>Escolha seu jogador favorito! Cada rifa custa R$ 25,00.<br>Ajude o JL nos custos do futebol.</p>
+  </header>
+
+  <div id="grid" class="grid"></div>
+
+  <!-- Modal -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <h2 id="modal-title"></h2>
+      <img id="modal-img" alt="Foto do jogador">
+
+      <input type="text" id="nome" placeholder="Seu nome completo" required>
+      <input type="tel" id="whatsapp" placeholder="WhatsApp (ex: 11925255252)" maxlength="11" required>
+      <input type="email" id="email" placeholder="Seu e-mail" required>
+
+      <div id="status-msg"></div>
+
+      <button id="confirm-btn">Confirmar Escolha - Pagar R$ <span id="valor-pix">25</span>,00</button>
+      <button id="cancel-btn">Cancelar</button>
+
+      <div id="pix-area" class="pix-area">
+        <h3>Pague via PIX - R$ <span id="valor-final">25</span>,00</h3>
+        <button id="copiar-pix-btn">Copiar código PIX</button>
+        <div class="qr">
+          <img id="qr-img" src="qr-pix.png" alt="QR Code PIX">
+        </div>
+        <small>Após o pagamento, envie o comprovante para o organizador.</small>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="utils.js"></
