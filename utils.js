@@ -1,4 +1,3 @@
-// ================= HASH SENHA =================
 async function hashSenha(senha) {
   const encoder = new TextEncoder();
   const data = encoder.encode(senha);
@@ -8,8 +7,6 @@ async function hashSenha(senha) {
 
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
-
-// ================= PIX =================
 
 function gerarPix(valor, nome, cidade, chavePix) {
   function format(id, value) {

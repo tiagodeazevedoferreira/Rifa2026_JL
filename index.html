@@ -16,23 +16,19 @@
 <!-- LOGIN -->
 <div id="login-area" class="modal" style="display:flex;">
   <div class="modal-content">
-    <h2>Login</h2>
+    <h2>Login / Cadastro</h2>
 
+    <input type="text" id="login-nome" placeholder="Seu nome">
     <input type="tel" id="login-whatsapp" placeholder="WhatsApp (11999999999)" maxlength="11">
     <input type="password" id="login-senha" placeholder="Senha (mín 6 caracteres)">
-    <input type="password" id="login-senha2" placeholder="Confirmar senha">
 
     <button id="btn-login">Entrar / Criar conta</button>
-    <button id="btn-esqueci">Esqueci a senha</button>
+    <button id="btn-reset">Esqueci a senha</button>
 
     <p id="login-msg"></p>
   </div>
 </div>
 
-<!-- FILTROS -->
-<div id="filtros" class="filtros"></div>
-
-<!-- GRID -->
 <div id="grid" class="grid"></div>
 
 <!-- CARRINHO -->
@@ -44,11 +40,11 @@
 </div>
 
 <!-- PIX -->
-<div id="pix-area" class="pix-area" style="display:none;">
-  <h3>Pagamento via PIX</h3>
+<div id="pix-area" style="display:none;">
+  <h3>PIX</h3>
   <p>Total: R$ <span id="valor-final">0</span>,00</p>
-  <button id="copiar-pix-btn">Copiar código PIX</button>
-  <textarea id="pix-code" readonly style="width:100%; height:100px;"></textarea>
+  <button id="copiar-pix-btn">Copiar PIX</button>
+  <textarea id="pix-code"></textarea>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
