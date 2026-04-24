@@ -1,3 +1,4 @@
+// 🔐 HASH SENHA
 async function hashSenha(senha) {
   const encoder = new TextEncoder();
   const data = encoder.encode(senha);
@@ -8,6 +9,7 @@ async function hashSenha(senha) {
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+// 💸 GERAR PIX
 function gerarPix(valor, nome, cidade, chavePix) {
   function format(id, value) {
     const size = value.length.toString().padStart(2, '0');
@@ -33,6 +35,7 @@ function gerarPix(valor, nome, cidade, chavePix) {
   return payload + "6304" + crc;
 }
 
+// 🔢 CRC16
 function crc16(payload) {
   let polinomio = 0x1021;
   let resultado = 0xFFFF;

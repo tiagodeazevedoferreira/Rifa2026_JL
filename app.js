@@ -1,6 +1,7 @@
 let jogadores = [];
 let selecoes = {};
 let carrinho = [];
+let minhasReservas = [];
 let usuarioLogado = null;
 
 // ================= LOGIN =================
@@ -35,8 +36,11 @@ async function loginOuCriar() {
     }
 
     usuarioLogado = { nome, whatsapp };
+
     document.getElementById('login-area').style.display = 'none';
+
     atualizarUsuarioUI();
+    carregarReservas();
   });
 }
 
@@ -44,32 +48,23 @@ async function loginOuCriar() {
 
 async function resetSenha() {
   const whatsapp = document.getElementById('login-whatsapp').value.trim();
-  const novaSenha = prompt("Digite a nova senha (mín 6 caracteres):");
+  const novaSenha = prompt("Nova senha:");
 
-  if (!validarWhatsapp(whatsapp)) {
-    return alert("WhatsApp inválido");
-  }
-
-  if (!novaSenha || novaSenha.length < 6) {
-    return alert("Senha inválida");
-  }
+  if (!validarWhatsapp(whatsapp)) return alert("WhatsApp inválido");
+  if (!novaSenha || novaSenha.length < 6) return alert("Senha inválida");
 
   const senhaHash = await hashSenha(novaSenha);
 
-  const ref = db.ref('usuarios/' + whatsapp);
+  db.ref('usuarios/' + whatsapp).once('value').then(snap => {
+    if (!snap.exists()) return alert("Usuário não encontrado");
 
-  ref.once('value').then(snapshot => {
-    if (!snapshot.exists()) {
-      alert("Usuário não encontrado");
-      return;
-    }
+    db.ref('usuarios/' + whatsapp).update({ senha: senhaHash });
 
-    ref.update({ senha: senhaHash });
-    alert("Senha atualizada com sucesso!");
+    alert("Senha atualizada!");
   });
 }
 
-// ================= UI =================
+// ================= USUÁRIO UI =================
 
 function atualizarUsuarioUI() {
   document.getElementById('user-info').textContent =
@@ -79,23 +74,31 @@ function atualizarUsuarioUI() {
 // ================= JOGADORES =================
 
 function carregarJogadores() {
-  db.ref('jogadores').once('value')
-    .then(snapshot => {
-      const data = snapshot.val() || {};
+  db.ref('jogadores').once('value').then(snapshot => {
+    const data = snapshot.val() || {};
 
-      jogadores = Object.keys(data).map(key => ({
-        id: key,
-        ...data[key]
-      }));
+    jogadores = Object.keys(data).map(key => ({
+      id: key,
+      ...data[key]
+    }));
 
-      carregarReservas();
-    });
+    carregarReservas();
+  });
 }
+
+// ================= RESERVAS =================
 
 function carregarReservas() {
   db.ref('reservas').on('value', snapshot => {
     selecoes = snapshot.val() || {};
+
+    if (usuarioLogado) {
+      minhasReservas = Object.values(selecoes)
+        .filter(r => r.whatsapp === usuarioLogado.whatsapp);
+    }
+
     renderCards();
+    renderMinhasCompras();
   });
 }
 
@@ -107,9 +110,15 @@ function renderCards() {
 
   jogadores.forEach(j => {
     const reservado = !!selecoes[j.id];
+    const noCarrinho = carrinho.find(c => c.id === j.id);
 
     const card = document.createElement('div');
-    card.className = `card ${reservado ? 'reservado' : ''}`;
+
+    card.className = `
+      card 
+      ${reservado ? 'reservado' : ''} 
+      ${noCarrinho ? 'selecionado' : ''}
+    `;
 
     card.innerHTML = `
       <img src="${j.linkDrive || j.link_drive}">
@@ -129,12 +138,12 @@ function renderCards() {
 function adicionarAoCarrinho(j) {
   if (!usuarioLogado) return alert("Faça login");
 
-  if (carrinho.find(x => x.id === j.id)) {
-    return alert("Já está no carrinho");
-  }
+  if (carrinho.find(x => x.id === j.id)) return;
 
   carrinho.push(j);
+
   atualizarCarrinho();
+  renderCards();
 }
 
 function atualizarCarrinho() {
@@ -143,6 +152,30 @@ function atualizarCarrinho() {
   lista.innerHTML = carrinho.map(j => `<li>${j.jogador}</li>`).join('');
 
   document.getElementById('carrinho-total').textContent = carrinho.length * 25;
+}
+
+function limparCarrinho() {
+  carrinho = [];
+  atualizarCarrinho();
+  renderCards();
+}
+
+// ================= COMPRAS =================
+
+function renderMinhasCompras() {
+  const div = document.getElementById('minhas-compras');
+
+  if (!usuarioLogado || minhasReservas.length === 0) {
+    div.innerHTML = '';
+    return;
+  }
+
+  div.innerHTML = `
+    <h3>✅ Seus jogadores:</h3>
+    <ul>
+      ${minhasReservas.map(r => `<li>${r.jogador}</li>`).join('')}
+    </ul>
+  `;
 }
 
 // ================= FINALIZAR =================
@@ -161,6 +194,7 @@ function finalizarCompra() {
 
   document.getElementById('valor-final').textContent = total;
   document.getElementById('pix-code').value = pix;
+
   document.getElementById('pix-area').style.display = 'block';
 
   navigator.clipboard.writeText(pix);
@@ -182,6 +216,7 @@ function salvarReservas() {
 
   carrinho = [];
   atualizarCarrinho();
+  renderCards();
 }
 
 // ================= EVENTOS =================
@@ -189,6 +224,7 @@ function salvarReservas() {
 document.getElementById('btn-login').addEventListener('click', loginOuCriar);
 document.getElementById('btn-reset').addEventListener('click', resetSenha);
 document.getElementById('finalizar-btn').addEventListener('click', finalizarCompra);
+document.getElementById('limpar-btn').addEventListener('click', limparCarrinho);
 
 document.getElementById('copiar-pix-btn').addEventListener('click', () => {
   navigator.clipboard.writeText(document.getElementById('pix-code').value);
