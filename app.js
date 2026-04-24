@@ -1,41 +1,28 @@
-// ================== RIFA JL 2026 ==================
-
 let jogadores = [];
 let selecoes = {};
-let filtroAtual = 'todos';
+let carrinho = [];
 let usuarioLogado = null;
+let filtroAtual = 'todos';
 
-// ================== NOMES DAS RIFAS ==================
-const NOMES_RIFAS = {
-  "1994": "Seleção 1994",
-  "2002": "Seleção 2002",
-  "2006": "Copa 2006",
-  "premier": "Premier League",
-};
-
-function getNomeRifa(album) {
-  return NOMES_RIFAS[album] || album;
-}
-
-// ================== LOGIN ==================
+// ================= LOGIN =================
 
 function validarWhatsapp(numero) {
   return /^\d{11}$/.test(numero);
 }
 
-function loginOuCriar() {
+async function loginOuCriar() {
   const whatsapp = document.getElementById('login-whatsapp').value.trim();
   const senha = document.getElementById('login-senha').value;
   const senha2 = document.getElementById('login-senha2').value;
   const msg = document.getElementById('login-msg');
 
   if (!validarWhatsapp(whatsapp)) {
-    msg.textContent = "WhatsApp inválido. Use DDD + número (11 dígitos).";
+    msg.textContent = "WhatsApp inválido.";
     return;
   }
 
   if (senha.length < 6) {
-    msg.textContent = "Senha deve ter no mínimo 6 caracteres.";
+    msg.textContent = "Senha muito curta.";
     return;
   }
 
@@ -44,54 +31,37 @@ function loginOuCriar() {
     return;
   }
 
+  const senhaHash = await hashSenha(senha);
   const ref = db.ref('usuarios/' + whatsapp);
 
   ref.once('value').then(snapshot => {
     const user = snapshot.val();
 
     if (user) {
-      // LOGIN
-      if (user.senha !== senha) {
+      if (user.senha !== senhaHash) {
         msg.textContent = "Senha incorreta.";
         return;
       }
     } else {
-      // CADASTRO
-      ref.set({ whatsapp, senha });
+      ref.set({ whatsapp, senha: senhaHash });
     }
 
     usuarioLogado = whatsapp;
-
     document.getElementById('login-area').style.display = 'none';
-
-    console.log("✅ Usuário logado:", usuarioLogado);
+    atualizarUsuarioUI();
   });
 }
 
-function esqueciSenha() {
-  const whatsapp = document.getElementById('login-whatsapp').value.trim();
-  const msg = document.getElementById('login-msg');
+// ================= UI USUÁRIO =================
 
-  if (!validarWhatsapp(whatsapp)) {
-    msg.textContent = "Informe um WhatsApp válido.";
-    return;
-  }
-
-  db.ref('usuarios/' + whatsapp).once('value')
-    .then(snapshot => {
-      if (!snapshot.exists()) {
-        msg.textContent = "Usuário não encontrado.";
-      } else {
-        msg.textContent = "Procure o organizador para redefinir a senha.";
-      }
-    });
+function atualizarUsuarioUI() {
+  document.getElementById('user-info').textContent =
+    `Logado como: ${usuarioLogado}`;
 }
 
-// ================== CARREGAR JOGADORES ==================
+// ================= JOGADORES =================
 
 function carregarJogadores() {
-  console.log("🔄 Carregando jogadores do Firebase...");
-
   db.ref('jogadores').once('value')
     .then(snapshot => {
       const data = snapshot.val() || {};
@@ -101,177 +71,124 @@ function carregarJogadores() {
         ...data[key]
       }));
 
-      console.log(`✅ ${jogadores.length} jogadores carregados`);
-
       carregarReservas();
-    })
-    .catch(err => {
-      console.error("❌ Erro ao carregar jogadores:", err);
-      mostrarErro(err.message);
     });
 }
 
-// ================== ERRO UI ==================
-
-function mostrarErro(msg) {
-  const grid = document.getElementById('grid');
-
-  grid.innerHTML = `
-    <div style="text-align:center; padding:40px;">
-      <h2>❌ Erro ao carregar jogadores</h2>
-      <p>${msg}</p>
-      <button onclick="location.reload()">Tentar novamente</button>
-    </div>
-  `;
-}
-
-// ================== RESERVAS ==================
+// ================= RESERVAS =================
 
 function carregarReservas() {
   db.ref('reservas').on('value', snapshot => {
     selecoes = snapshot.val() || {};
-    renderFiltros();
     renderCards();
   });
 }
 
-// ================== FILTROS ==================
-
-function renderFiltros() {
-  const container = document.getElementById('filtros');
-
-  const albumsUnicos = ['todos', ...new Set(jogadores.map(j => j.album))];
-
-  container.innerHTML = albumsUnicos.map(album => {
-    const label = album === 'todos' ? '🏆 Todos' : getNomeRifa(album);
-    const ativo = filtroAtual === album ? 'ativo' : '';
-
-    return `<button class="filtro-btn ${ativo}" onclick="setFiltro('${album}')">${label}</button>`;
-  }).join('');
-}
-
-function setFiltro(album) {
-  filtroAtual = album;
-  renderFiltros();
-  renderCards();
-}
-
-// ================== CARDS ==================
+// ================= CARDS =================
 
 function renderCards() {
   const grid = document.getElementById('grid');
   grid.innerHTML = '';
 
-  const lista = filtroAtual === 'todos'
-    ? jogadores
-    : jogadores.filter(j => j.album === filtroAtual);
-
-  lista.forEach(j => {
+  jogadores.forEach(j => {
     const isReservado = !!selecoes[j.id];
 
     const card = document.createElement('div');
     card.className = `card ${isReservado ? 'reservado' : ''}`;
 
     card.innerHTML = `
-      <img src="${j.linkDrive || j.link_drive}"
-           onerror="this.src='https://via.placeholder.com/300x200?text=Sem+Foto'">
+      <img src="${j.linkDrive || j.link_drive}">
       <h3>${j.jogador}</h3>
-      <p>${getNomeRifa(j.album)}</p>
     `;
 
     if (!isReservado) {
-      card.addEventListener('click', () => abrirModal(j));
+      card.onclick = () => adicionarAoCarrinho(j);
     }
 
     grid.appendChild(card);
   });
 }
 
-// ================== MODAL ==================
+// ================= CARRINHO =================
 
-let jogadorAtual = null;
+function adicionarAoCarrinho(j) {
+  if (!usuarioLogado) return alert("Faça login");
 
-function abrirModal(j) {
-  if (!usuarioLogado) {
-    alert("Faça login antes de reservar.");
+  if (carrinho.find(i => i.id === j.id)) {
+    return alert("Já no carrinho");
+  }
+
+  carrinho.push(j);
+  atualizarCarrinhoUI();
+}
+
+function atualizarCarrinhoUI() {
+  const lista = document.getElementById('carrinho-lista');
+
+  lista.innerHTML = carrinho.map(j => `<li>${j.jogador}</li>`).join('');
+
+  document.getElementById('carrinho-total').textContent =
+    carrinho.length * 25;
+}
+
+// ================= FINALIZAR =================
+
+function finalizarCompra() {
+  if (carrinho.length === 0) {
+    alert("Carrinho vazio");
     return;
   }
 
-  jogadorAtual = j;
+  const total = carrinho.length * 25;
 
-  document.getElementById('modal-title').textContent =
-    `${j.jogador} - ${getNomeRifa(j.album)}`;
+  const pix = gerarPix(
+    total,
+    "RIFA JL",
+    "SAO PAULO",
+    "SEU-PIX-AQUI"
+  );
 
-  document.getElementById('modal-img').src = j.linkDrive || j.link_drive;
+  document.getElementById('valor-final').textContent = total;
+  document.getElementById('pix-code').value = pix;
+  document.getElementById('pix-area').style.display = 'block';
 
-  document.getElementById('modal').style.display = 'flex';
+  navigator.clipboard.writeText(pix);
+
+  salvarReservas();
 }
 
-function fecharModal() {
-  document.getElementById('modal').style.display = 'none';
+// ================= SALVAR =================
+
+function salvarReservas() {
+  carrinho.forEach(j => {
+    const reserva = {
+      jogadorId: j.id,
+      jogador: j.jogador,
+      album: j.album,
+      whatsapp: usuarioLogado,
+      valor: 25,
+      status: "reservado",
+      data: new Date().toISOString()
+    };
+
+    db.ref('reservas/' + j.id).set(reserva);
+  });
+
+  carrinho = [];
+  atualizarCarrinhoUI();
 }
 
-// ================== CÁLCULO PIX ==================
-
-function calcularTotalUsuario() {
-  return Object.values(selecoes)
-    .filter(r => r.whatsapp === usuarioLogado)
-    .length * 25;
-}
-
-// ================== RESERVA ==================
-
-function confirmarSelecao() {
-  if (!usuarioLogado) {
-    alert("Faça login antes de reservar.");
-    return;
-  }
-
-  const nome = document.getElementById('nome').value.trim();
-  const email = document.getElementById('email').value.trim();
-
-  if (!nome || !email) {
-    alert("Preencha todos os campos.");
-    return;
-  }
-
-  const reserva = {
-    jogadorId: jogadorAtual.id,
-    jogador: jogadorAtual.jogador,
-    album: jogadorAtual.album,
-    nome,
-    email,
-    whatsapp: usuarioLogado,
-    valor: 25,
-    data: new Date().toISOString(),
-    status: "reservado"
-  };
-
-  db.ref('reservas/' + jogadorAtual.id).set(reserva)
-    .then(() => {
-      const total = calcularTotalUsuario();
-
-      document.getElementById('valor-pix').textContent = total;
-      document.getElementById('valor-final').textContent = total;
-
-      document.getElementById('pix-area').style.display = 'block';
-
-      alert("✅ Reservado com sucesso!");
-    });
-}
-
-// ================== EVENTOS ==================
-
-document.getElementById('confirm-btn').addEventListener('click', confirmarSelecao);
-document.getElementById('cancel-btn').addEventListener('click', fecharModal);
+// ================= EVENTOS =================
 
 document.getElementById('btn-login').addEventListener('click', loginOuCriar);
-document.getElementById('btn-esqueci').addEventListener('click', esqueciSenha);
+document.getElementById('finalizar-btn').addEventListener('click', finalizarCompra);
 
-// ================== INIT ==================
+document.getElementById('copiar-pix-btn').addEventListener('click', () => {
+  const pix = document.getElementById('pix-code').value;
+  navigator.clipboard.writeText(pix);
+  alert("PIX copiado!");
+});
+
+// ================= INIT =================
 
 carregarJogadores();
-
-document.getElementById('modal').addEventListener('click', (e) => {
-  if (e.target.id === 'modal') fecharModal();
-});

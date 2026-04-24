@@ -1,3 +1,19 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Rifa JL 2026 ⚽</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1>Rifa JL 2026 ⚽</h1>
+  <p id="user-info"></p>
+</header>
+
+<!-- LOGIN -->
 <div id="login-area" class="modal" style="display:flex;">
   <div class="modal-content">
     <h2>Login</h2>
@@ -13,55 +29,34 @@
   </div>
 </div>
 
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rifa JL 2026 ⚽</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <header>
-    <h1>Rifa JL 2026 ⚽</h1>
-    <p>Escolha seu jogador favorito! Cada rifa custa R$ 25,00.<br>Ajude o JL nos custos do futebol.</p>
-  </header>
+<!-- FILTROS -->
+<div id="filtros" class="filtros"></div>
 
-  <!-- Filtros dinâmicos por rifa -->
-  <div id="filtros" class="filtros"></div>
+<!-- GRID -->
+<div id="grid" class="grid"></div>
 
-  <div id="grid" class="grid"></div>
+<!-- CARRINHO -->
+<div id="carrinho-box">
+  <h3>🛒 Carrinho</h3>
+  <ul id="carrinho-lista"></ul>
+  <p>Total: R$ <span id="carrinho-total">0</span>,00</p>
+  <button id="finalizar-btn">Finalizar e pagar</button>
+</div>
 
-  <!-- Modal -->
-  <div id="modal" class="modal">
-    <div class="modal-content">
-      <h2 id="modal-title"></h2>
-      <img id="modal-img" alt="Foto do jogador">
+<!-- PIX -->
+<div id="pix-area" class="pix-area" style="display:none;">
+  <h3>Pagamento via PIX</h3>
+  <p>Total: R$ <span id="valor-final">0</span>,00</p>
+  <button id="copiar-pix-btn">Copiar código PIX</button>
+  <textarea id="pix-code" readonly style="width:100%; height:100px;"></textarea>
+</div>
 
-      <input type="text" id="nome" placeholder="Seu nome completo" required>
-      <input type="tel" id="whatsapp" placeholder="WhatsApp (ex: 11925255252)" maxlength="11" required>
-      <input type="email" id="email" placeholder="Seu e-mail" required>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="firebase-config.js"></script>
 
-      <div id="status-msg"></div>
+<script src="utils.js"></script>
+<script src="app.js"></script>
 
-      <button id="confirm-btn">Confirmar Escolha - Pagar R$ <span id="valor-pix">25</span>,00</button>
-      <button id="cancel-btn">Cancelar</button>
-
-      <div id="pix-area" class="pix-area">
-        <h3>Pague via PIX - R$ <span id="valor-final">25</span>,00</h3>
-        <button id="copiar-pix-btn">Copiar código PIX</button>
-        <div class="qr">
-          <img id="qr-img" src="qr-pix.png" alt="QR Code PIX">
-        </div>
-        <small>Após o pagamento, envie o comprovante para o organizador.</small>
-      </div>
-    </div>
-  </div>
-
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-  <script src="firebase-config.js"></script>
-  <script src="utils.js"></script>
-  <script src="app.js"></script>
 </body>
 </html>
