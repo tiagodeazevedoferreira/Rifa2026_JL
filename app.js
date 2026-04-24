@@ -1,236 +1,101 @@
-let jogadores = [];
-let selecoes = {};
-let carrinho = [];
-let minhasReservas = [];
-let usuarioLogado = null;
+let filtroAdmin = "todos";
+let reservasAdminCache = {};
 
-// ================= LOGIN =================
+// ================= ADMIN =================
 
-function validarWhatsapp(numero) {
-  return /^\d{11}$/.test(numero);
+function verificarAdmin() {
+  if (usuarioLogado.whatsapp === ADMIN_WHATS) {
+    document.getElementById('admin-area').style.display = 'block';
+    carregarAdmin();
+  }
 }
 
-async function loginOuCriar() {
-  const nome = document.getElementById('login-nome').value.trim();
-  const whatsapp = document.getElementById('login-whatsapp').value.trim();
-  const senha = document.getElementById('login-senha').value;
-  const msg = document.getElementById('login-msg');
+// ================= CARREGAR =================
 
-  if (!nome) return msg.textContent = "Informe seu nome";
-  if (!validarWhatsapp(whatsapp)) return msg.textContent = "WhatsApp inválido";
-  if (senha.length < 6) return msg.textContent = "Senha muito curta";
-
-  const senhaHash = await hashSenha(senha);
-  const ref = db.ref('usuarios/' + whatsapp);
-
-  ref.once('value').then(snapshot => {
-    const user = snapshot.val();
-
-    if (user) {
-      if (user.senha !== senhaHash) {
-        msg.textContent = "Senha incorreta";
-        return;
-      }
-    } else {
-      ref.set({ nome, whatsapp, senha: senhaHash });
-    }
-
-    usuarioLogado = { nome, whatsapp };
-
-    document.getElementById('login-area').style.display = 'none';
-
-    atualizarUsuarioUI();
-    carregarReservas();
+function carregarAdmin() {
+  db.ref('reservas').on('value', snap => {
+    reservasAdminCache = snap.val() || {};
+    renderAdmin();
   });
 }
 
-// ================= RESET SENHA =================
+// ================= FILTRO =================
 
-async function resetSenha() {
-  const whatsapp = document.getElementById('login-whatsapp').value.trim();
-  const novaSenha = prompt("Nova senha:");
-
-  if (!validarWhatsapp(whatsapp)) return alert("WhatsApp inválido");
-  if (!novaSenha || novaSenha.length < 6) return alert("Senha inválida");
-
-  const senhaHash = await hashSenha(novaSenha);
-
-  db.ref('usuarios/' + whatsapp).once('value').then(snap => {
-    if (!snap.exists()) return alert("Usuário não encontrado");
-
-    db.ref('usuarios/' + whatsapp).update({ senha: senhaHash });
-
-    alert("Senha atualizada!");
-  });
+function filtrarAdmin(tipo) {
+  filtroAdmin = tipo;
+  renderAdmin();
 }
 
-// ================= USUÁRIO UI =================
+// ================= RENDER =================
 
-function atualizarUsuarioUI() {
-  document.getElementById('user-info').textContent =
-    `Logado como: ${usuarioLogado.nome}`;
-}
+function renderAdmin() {
+  const listaDiv = document.getElementById('admin-list');
+  const resumoDiv = document.getElementById('admin-resumo');
 
-// ================= JOGADORES =================
+  let reservas = Object.entries(reservasAdminCache);
 
-function carregarJogadores() {
-  db.ref('jogadores').once('value').then(snapshot => {
-    const data = snapshot.val() || {};
-
-    jogadores = Object.keys(data).map(key => ({
-      id: key,
-      ...data[key]
-    }));
-
-    carregarReservas();
-  });
-}
-
-// ================= RESERVAS =================
-
-function carregarReservas() {
-  db.ref('reservas').on('value', snapshot => {
-    selecoes = snapshot.val() || {};
-
-    if (usuarioLogado) {
-      minhasReservas = Object.values(selecoes)
-        .filter(r => r.whatsapp === usuarioLogado.whatsapp);
-    }
-
-    renderCards();
-    renderMinhasCompras();
-  });
-}
-
-// ================= CARDS =================
-
-function renderCards() {
-  const grid = document.getElementById('grid');
-  grid.innerHTML = '';
-
-  jogadores.forEach(j => {
-    const reservado = !!selecoes[j.id];
-    const noCarrinho = carrinho.find(c => c.id === j.id);
-
-    const card = document.createElement('div');
-
-    card.className = `
-      card 
-      ${reservado ? 'reservado' : ''} 
-      ${noCarrinho ? 'selecionado' : ''}
-    `;
-
-    card.innerHTML = `
-      <img src="${j.linkDrive || j.link_drive}">
-      <h3>${j.jogador}</h3>
-    `;
-
-    if (!reservado) {
-      card.onclick = () => adicionarAoCarrinho(j);
-    }
-
-    grid.appendChild(card);
-  });
-}
-
-// ================= CARRINHO =================
-
-function adicionarAoCarrinho(j) {
-  if (!usuarioLogado) return alert("Faça login");
-
-  if (carrinho.find(x => x.id === j.id)) return;
-
-  carrinho.push(j);
-
-  atualizarCarrinho();
-  renderCards();
-}
-
-function atualizarCarrinho() {
-  const lista = document.getElementById('carrinho-lista');
-
-  lista.innerHTML = carrinho.map(j => `<li>${j.jogador}</li>`).join('');
-
-  document.getElementById('carrinho-total').textContent = carrinho.length * 25;
-}
-
-function limparCarrinho() {
-  carrinho = [];
-  atualizarCarrinho();
-  renderCards();
-}
-
-// ================= COMPRAS =================
-
-function renderMinhasCompras() {
-  const div = document.getElementById('minhas-compras');
-
-  if (!usuarioLogado || minhasReservas.length === 0) {
-    div.innerHTML = '';
-    return;
+  if (filtroAdmin !== "todos") {
+    reservas = reservas.filter(([_, r]) => r.status === filtroAdmin);
   }
 
-  div.innerHTML = `
-    <h3>✅ Seus jogadores:</h3>
-    <ul>
-      ${minhasReservas.map(r => `<li>${r.jogador}</li>`).join('')}
-    </ul>
+  // 📊 RESUMO
+  const total = Object.values(reservasAdminCache).length;
+  const pagos = Object.values(reservasAdminCache).filter(r => r.status === 'pago').length;
+  const pendentes = Object.values(reservasAdminCache).filter(r => r.status === 'pendente').length;
+  const valorTotal = pagos * 25;
+
+  resumoDiv.innerHTML = `
+    <p><b>Total:</b> ${total}</p>
+    <p><b>Pagos:</b> ${pagos}</p>
+    <p><b>Pendentes:</b> ${pendentes}</p>
+    <p><b>Valor arrecadado:</b> R$ ${valorTotal},00</p>
   `;
+
+  // 📋 LISTA
+  listaDiv.innerHTML = reservas.map(([id, r]) => {
+
+    const whatsappLink = `https://wa.me/55${r.whatsapp}?text=Oi,%20sobre%20a%20rifa%20do%20jogador%20${encodeURIComponent(r.jogador)}`;
+
+    return `
+      <div style="
+        border:1px solid #ccc;
+        padding:10px;
+        margin:5px;
+        border-radius:8px;
+        background:${r.status === 'pago' ? '#e6ffed' : '#fff'};
+      ">
+        <b>${r.jogador}</b><br>
+        👤 ${r.nome}<br>
+        📱 ${r.whatsapp}<br>
+        💰 R$ ${r.valor}<br>
+        📌 Status: <b>${r.status}</b><br>
+
+        <div style="margin-top:8px;">
+          ${r.status === 'pendente' ? `
+            <button onclick="confirmarPagamento('${id}')">✅ Confirmar</button>
+            <button onclick="cancelarReserva('${id}')">❌ Cancelar</button>
+          ` : ''}
+
+          <a href="${whatsappLink}" target="_blank">
+            <button>💬 WhatsApp</button>
+          </a>
+        </div>
+      </div>
+    `;
+  }).join('');
 }
 
-// ================= FINALIZAR =================
+// ================= AÇÕES =================
 
-function finalizarCompra() {
-  if (carrinho.length === 0) return alert("Carrinho vazio");
-
-  const total = carrinho.length * 25;
-
-  const pix = gerarPix(
-    total,
-    "RIFA JL",
-    "SAO PAULO",
-    "SUA-CHAVE-PIX"
-  );
-
-  document.getElementById('valor-final').textContent = total;
-  document.getElementById('pix-code').value = pix;
-
-  document.getElementById('pix-area').style.display = 'block';
-
-  navigator.clipboard.writeText(pix);
-
-  salvarReservas();
-}
-
-function salvarReservas() {
-  carrinho.forEach(j => {
-    db.ref('reservas/' + j.id).set({
-      jogador: j.jogador,
-      whatsapp: usuarioLogado.whatsapp,
-      nome: usuarioLogado.nome,
-      valor: 25,
-      status: "reservado",
-      data: new Date().toISOString()
-    });
+function confirmarPagamento(id) {
+  db.ref('reservas/' + id).update({
+    status: "pago"
   });
 
-  carrinho = [];
-  atualizarCarrinho();
-  renderCards();
+  db.ref('locks/' + id).remove();
 }
 
-// ================= EVENTOS =================
-
-document.getElementById('btn-login').addEventListener('click', loginOuCriar);
-document.getElementById('btn-reset').addEventListener('click', resetSenha);
-document.getElementById('finalizar-btn').addEventListener('click', finalizarCompra);
-document.getElementById('limpar-btn').addEventListener('click', limparCarrinho);
-
-document.getElementById('copiar-pix-btn').addEventListener('click', () => {
-  navigator.clipboard.writeText(document.getElementById('pix-code').value);
-  alert("PIX copiado!");
-});
-
-// ================= INIT =================
-
-carregarJogadores();
+function cancelarReserva(id) {
+  db.ref('reservas/' + id).remove();
+  db.ref('locks/' + id).remove();
+}
