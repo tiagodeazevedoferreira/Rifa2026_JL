@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Rifa JL 2026 ⚽</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1>Rifa JL 2026 ⚽</h1>
+  <p id="user-info"></p>
+</header>
+
+<!-- PIX -->
+<div id="pix-area" style="display:none;">
+  <h3>💸 Pagamento via PIX</h3>
+  <p>Total: R$ <span id="valor-final">0</span>,00</p>
+  <button id="copiar-pix-btn">Copiar PIX</button>
+  <textarea id="pix-code"></textarea>
+  <p>⚠️ Após pagar, envie comprovante para WhatsApp 11984982090</p>
+</div>
+
+<!-- CARRINHO -->
+<div id="carrinho-box">
+  <h3>🛒 Carrinho</h3>
+  <ul id="carrinho-lista"></ul>
+  <p>Total: R$ <span id="carrinho-total">0</span>,00</p>
+  <button id="finalizar-btn">Finalizar</button>
+  <button id="limpar-btn">Limpar</button>
+</div>
+
+<!-- COMPRAS -->
+<div id="minhas-compras"></div>
+
+<!-- ADMIN -->
+<div id="admin-area" style="display:none;">
+  <h3>📊 Admin</h3>
+  <div id="admin-list"></div>
+</div>
+
+<!-- LOGIN -->
+<div id="login-area" class="modal">
+  <div class="modal-content">
+    <h2>Login</h2>
+    <input id="login-nome" placeholder="Seu nome">
+    <input id="login-whatsapp" placeholder="WhatsApp (11999999999)">
+    <input id="login-senha" type="password" placeholder="Senha (mín 6)">
+    <button id="btn-login">Entrar</button>
+    <button id="btn-reset">Trocar senha</button>
+    <p id="login-msg"></p>
+  </div>
+</div>
+
+<!-- GRID -->
+<div id="grid" class="grid"></div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="firebase-config.js"></script>
+
+<script src="utils.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
