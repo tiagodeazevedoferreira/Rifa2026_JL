@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Rifa JL 2026 ⚽</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1>Rifa JL 2026 ⚽</h1>
+  <p id="user-info"></p>
+  <button id="logout-btn" style="display:none;">Trocar usuário</button>
+</header>
+
+<!-- ADMIN -->
+<div id="admin-area" style="display:none;">
+  <h3>📊 Painel Admin</h3>
+
+  <div id="admin-dashboard">
+    <div class="metrics">
+
+      <div class="metric">
+        <span class="label">💰 Arrecadado</span>
+        <span class="value" id="metric-total">0.00</span>
+      </div>
+
+      <div class="metric">
+        <span class="label">📦 Reservas</span>
+        <span class="value" id="metric-qtd">0</span>
+      </div>
+
+      <div class="metric">
+        <span class="label">✅ Pagos</span>
+        <span class="value" id="metric-pagos">0</span>
+      </div>
+
+      <div class="metric">
+        <span class="label">⏳ Pendentes</span>
+        <span class="value" id="metric-pendentes">0</span>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="admin-list"></div>
+</div>
+
+<!-- CARRINHO -->
+<div id="carrinho-box">
+  <h3>🛒 Carrinho</h3>
+  <ul id="carrinho-lista"></ul>
+  <p>Total: R$ <span id="carrinho-total">0</span>,00</p>
+  <button id="finalizar-btn">Finalizar</button>
+  <button id="limpar-btn">Limpar</button>
+</div>
+
+<!-- PIX -->
+<div id="pix-area" style="display:none; margin:20px;">
+  <h3>💸 Pagamento via PIX</h3>
+
+  <p>Total: R$ <span id="valor-final">0</span></p>
+
+  <textarea 
+    id="pix-code" 
+    readonly 
+    style="width:100%; height:80px; margin-top:10px;">
+  </textarea>
+
+  <button id="copiar-pix" style="margin-top:10px;">
+    Copiar código PIX
+  </button>
+
+  <p style="font-size:12px; color:#666;">
+    Após o pagamento, envie o comprovante para confirmação.
+  </p>
+</div>
+
+<!-- MINHAS RESERVAS -->
+<div id="minhas-compras">
+  <h3>📦 Minhas reservas</h3>
+  <ul id="lista-minhas"></ul>
+</div>
+
+<!-- LOGIN -->
+<div id="login-area" class="modal">
+  <div class="modal-content">
+    <h2>Login / Cadastro</h2>
+
+    <input id="login-nome" placeholder="Seu nome">
+    <input id="login-whatsapp" placeholder="WhatsApp (somente números)">
+    <input id="login-senha" type="password" placeholder="Senha (mín. 6 caracteres)">
+
+    <label style="font-size:14px;">
+      <input type="checkbox" id="lembrar-login">
+      Permanecer logado
+    </label>
+
+    <button id="btn-login">Entrar</button>
+
+    <p id="login-msg" style="color:red; margin-top:10px;"></p>
+  </div>
+</div>
+
+<!-- GRID DE JOGADORES -->
+<div id="grid" class="grid"></div>
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="firebase-config.js"></script>
+
+<!-- SCRIPTS -->
+<script src="utils.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
