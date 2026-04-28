@@ -6,6 +6,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <link rel="stylesheet" href="style.css">
+
+<!-- 🔥 GOOGLE ANALYTICS (GA4) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WF2SH8YZFL"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  
+  gtag('js', new Date());
+
+  gtag('config', 'G-WF2SH8YZFL');
+</script>  
+  
 </head>
 <body>
 
@@ -48,6 +60,14 @@
   <button id="admin-add">Adicionar</button>
 
   <hr>
+
+<div id="admin-stats" style="margin-bottom:15px;">
+  <p>💰 Total: R$ <span id="stat-total">0</span></p>
+  <p>🧾 Reservas: <span id="stat-reservas">0</span></p>
+  <p>⏳ Pendentes: <span id="stat-pendentes">0</span></p>
+  <p>✅ Pagos: <span id="stat-pagos">0</span></p>
+  <p>📈 Conversão: <span id="stat-conversao">0%</span></p>
+</div>
 
   <!-- LISTA -->
   <div id="admin-list"></div>
@@ -99,6 +119,10 @@
 
 <!-- APP -->
 <script src="app.js"></script>
+
+<footer style="text-align:center; padding:15px; font-size:12px; color:#666;">
+  Este site utiliza cookies para melhorar sua experiência.
+</footer>
 
 </body>
 </html>

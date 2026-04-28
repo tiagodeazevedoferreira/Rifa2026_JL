@@ -116,13 +116,19 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ===== CARRINHO =====
-  function adicionarAoCarrinho(j) {
-    if (carrinho.find(x => x.id === j.id)) return;
+function adicionarAoCarrinho(j) {
+  if (carrinho.find(x => x.id === j.id)) return;
 
-    carrinho.push(j);
-    atualizarCarrinho();
-    mostrarToast(`✔ ${j.jogador} adicionado`);
-  }
+  carrinho.push(j);
+  atualizarCarrinho();
+
+  mostrarToast(`✔ ${j.jogador} adicionado`);
+
+  // 🔥 GOOGLE ANALYTICS
+  gtag('event', 'add_to_cart', {
+    item_name: j.jogador
+  });
+}
 
   function atualizarCarrinho() {
     carrinhoLista.innerHTML = carrinho.map(j => `<li>${j.jogador}</li>`).join('');
@@ -271,9 +277,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!nome) return alert("Informe seu nome");
 
-    const total = carrinho.length * 25;
-    const codigoPix = gerarPix(total);
+const total = carrinho.length * 25;
+const codigoPix = gerarPix(total);
 
+// 🔥 GOOGLE ANALYTICS
+gtag('event', 'finalizar_compra', {
+  value: total,
+  currency: 'BRL'
+});
     valorFinal.textContent = total.toFixed(2);
     pixCode.value = codigoPix;
     pixArea.style.display = "block";
@@ -299,6 +310,12 @@ Envio o comprovante em seguida.`;
     const numero = "5511984982090";
     btnWhatsapp.href = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
     btnWhatsapp.style.display = "block";
+
+// 🔥 GOOGLE ANALYTICS
+btnWhatsapp.onclick = () => {
+  gtag('event', 'clique_whatsapp');
+};
+	
 
     carrinho.forEach(j => {
       db.ref('reservas/' + j.id).transaction(current => {
