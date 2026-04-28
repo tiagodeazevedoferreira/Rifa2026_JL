@@ -19,50 +19,50 @@ body {
 
 .header-container {
   display: flex;
-  align-items: stretch;
+  align-items: center; /* 🔥 alinhamento vertical */
   justify-content: space-between;
-  gap: 30px;
-  padding: 30px 20px;
-  flex-wrap: wrap;
+  gap: 16px;
+  padding: 16px;
 }
 
+/* TEXTO */
 .header-texto {
   flex: 1;
-  min-width: 300px;
 }
 
 .header-texto h1 {
-  margin-bottom: 15px;
+  font-size: 18px; /* 🔽 reduzido */
+  margin-bottom: 8px;
+  line-height: 1.2;
 }
 
 .header-texto p {
-  margin-bottom: 12px;
-  line-height: 1.6;
+  font-size: 13px; /* 🔽 compacto */
+  margin-bottom: 8px;
+  line-height: 1.4;
 }
 
 /* IMAGEM */
 .header-imagem {
-  flex: 1;
-  display: flex;
-  justify-content: center;
+  flex-shrink: 0;
 }
 
 .header-imagem img {
-  width: 30%;
-  max-width: 320px;
+  width: 100px; /* 🔥 controla tamanho real */
   height: auto;
+  border-radius: 10px;
   object-fit: cover;
-  border-radius: 12px;
 }
 
 /* ================= GRID ================= */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 15px;
-  padding: 20px;
+  gap: 12px;
+  padding: 12px;
 }
 
+/* ================= CARD ================= */
 .card {
   background: #fff;
   border-radius: 10px;
@@ -73,22 +73,23 @@ body {
 }
 
 .card:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 8px 18px rgba(0,0,0,0.2);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.2);
 }
 
 .card img {
   width: 100%;
-  height: 140px;
+  height: 120px; /* 🔥 menor */
   object-fit: cover;
 }
 
 .card h3 {
-  padding: 10px;
-  font-size: 14px;
+  padding: 6px;
+  font-size: 13px; /* 🔽 menor */
   text-align: center;
 }
 
+/* RESERVADO */
 .card.reservado {
   position: relative;
   pointer-events: none;
@@ -97,12 +98,12 @@ body {
 .card.reservado::after {
   content: "RESERVADO";
   position: absolute;
-  top: 10px;
-  left: 10px;
-  background: rgba(220, 53, 69, 0.9);
+  top: 8px;
+  left: 8px;
+  background: rgba(220, 53, 69, 0.95);
   color: #fff;
-  padding: 5px 8px;
-  font-size: 12px;
+  padding: 4px 7px;
+  font-size: 11px;
   border-radius: 6px;
   font-weight: bold;
 }
@@ -110,6 +111,7 @@ body {
 .card.reservado img {
   filter: grayscale(70%) brightness(0.7);
 }
+
 /* ================= CARRINHO ================= */
 #carrinho-box button,
 #copiar-pix,
@@ -135,6 +137,11 @@ body {
 #limpar-btn:hover {
   background: #c82333;
   transform: scale(1.05);
+}
+
+#copiar-pix {
+  background: #007bff;
+  color: #fff;
 }
 
 #copiar-pix:hover {
@@ -167,21 +174,11 @@ body {
   cursor: pointer;
 }
 
-#finalizar-btn {
-  background: #28a745;
-  color: #fff;
-}
-
-#limpar-btn {
-  background: #dc3545;
-  color: #fff;
-}
-
 /* ================= PIX ================= */
 #pix-area {
   background: #fff;
-  margin: 20px;
-  padding: 15px;
+  margin: 12px;
+  padding: 12px;
   border-radius: 10px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
@@ -197,9 +194,6 @@ body {
   padding: 10px;
   border: none;
   border-radius: 6px;
-  background: #007bff;
-  color: #fff;
-  cursor: pointer;
 }
 
 /* QR CODE */
@@ -212,14 +206,15 @@ body {
 /* ================= ADMIN ================= */
 #admin-area {
   background: #fff;
-  margin: 20px;
-  padding: 15px;
+  margin: 12px;
+  padding: 12px;
   border-radius: 10px;
 }
 
 .admin-item {
-  padding: 10px;
+  padding: 8px;
   border-bottom: 1px solid #eee;
+  font-size: 13px;
 }
 
 .admin-item button {
@@ -242,13 +237,38 @@ body {
 
 /* ================= MOBILE ================= */
 @media (max-width: 768px) {
+
   .header-container {
-    flex-direction: column;
+    flex-direction: row; /* 🔥 mantém lado a lado */
     align-items: center;
-    text-align: center;
+    text-align: left;
   }
 
-.header-imagem {
-  align-items: flex-start;
+  .header-texto h1 {
+    font-size: 16px;
+  }
+
+  .header-texto p {
+    font-size: 12px;
+  }
+
+  .header-imagem img {
+    width: 80px; /* 🔥 menor no mobile */
+  }
+
+  /* 🔥 GRID 2 COLUNAS */
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
+
+/* EXTRA MOBILE PEQUENO */
+@media (max-width: 420px) {
+  .header-imagem img {
+    width: 70px;
+  }
+
+  .card img {
+    height: 110px;
+  }
 }
