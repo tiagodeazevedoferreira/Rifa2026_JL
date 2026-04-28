@@ -1,217 +1,80 @@
-body {
-  font-family: Arial, Helvetica, sans-serif;
+/* RESET */
+* {
   margin: 0;
-  padding: 20px;
-  background: #f4f4f4;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background-color: #f5f5f5;
   color: #333;
 }
 
-header {
-  text-align: center;
-  margin-bottom: 30px;
+/* ================= HEADER ================= */
+.header-principal {
+  background-color: #000;
+  color: #fff;
 }
 
-h1 {
-  color: #1e3a8a;
-}
-
-/* ===== FILTROS ===== */
-.filtros {
+.header-container {
   display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 30px;
+  padding: 30px 20px;
   flex-wrap: wrap;
-  gap: 10px;
+}
+
+.header-texto {
+  flex: 1;
+  min-width: 300px;
+}
+
+.header-texto h1 {
+  margin-bottom: 15px;
+}
+
+.header-texto p {
+  margin-bottom: 12px;
+  line-height: 1.6;
+}
+
+/* IMAGEM */
+.header-imagem {
+  flex: 1;
+  display: flex;
   justify-content: center;
-  max-width: 1200px;
-  margin: 0 auto 24px;
-  padding: 0 10px;
 }
 
-.filtro-btn {
-  padding: 10px 20px;
-  border: 2px solid #1e3a8a;
-  border-radius: 24px;
-  background: white;
-  color: #1e3a8a;
-  font-size: 15px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.filtro-btn:hover {
-  background: #e8eef9;
-}
-
-.filtro-btn.ativo {
-  background: #1e3a8a;
-  color: white;
-}
-
-/* ===== GRID ===== */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 16px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.card {
-  background: white;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-
-.card:hover {
-  transform: scale(1.05);
-}
-
-.card.reservado {
-  filter: grayscale(100%);
-  opacity: 0.85;
-  position: relative;
-}
-
-.card.reservado::after {
-  content: "RESERVADO";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(220, 38, 38, 0.9);
-  color: white;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-weight: bold;
-  font-size: 1.1em;
-}
-
-.card img {
-  width: 100%;
-  height: 200px;
+.header-imagem img {
+  width: 30%;
+  max-width: 320px;
+  height: auto;
   object-fit: cover;
-}
-
-.card h3 {
-  margin: 10px 0 5px;
-  text-align: center;
-  font-size: 1.05em;
-}
-
-.card p {
-  text-align: center;
-  margin: 0 0 10px;
-  color: #666;
-  font-size: 0.95em;
-}
-
-/* ===== MODAL ===== */
-.modal {
-  display: none;
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.75);
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: white;
-  padding: 25px;
   border-radius: 12px;
-  max-width: 420px;
-  width: 90%;
-  max-height: 90vh;
-  overflow-y: auto;
 }
 
-.modal-content input {
-  width: 100%;
-  padding: 12px;
-  margin: 8px 0;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 16px;
-  box-sizing: border-box;
-}
-
-.modal-content button {
-  width: 100%;
-  padding: 14px;
-  margin: 8px 0;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-#confirm-btn {
-  background: #1e3a8a;
-  color: white;
-  font-weight: bold;
-}
-
-#cancel-btn {
-  background: #6b7280;
-  color: white;
-}
-
-.pix-area {
-  margin-top: 20px;
-  padding-top: 15px;
-  border-top: 1px solid #ddd;
-  text-align: center;
-}
-
-.qr img {
-  max-width: 230px;
-  margin: 15px 0;
-}
-
-.reservado-info {
-  color: #ef4444;
-  font-weight: bold;
-}
-
-
-body {
-  font-family: Arial;
-  margin: 0;
-  background: #f5f5f5;
-}
-
-header {
-  text-align: center;
-  padding: 10px;
-  background: #111;
-  color: white;
-}
-
-/* GRID */
+/* ================= GRID ================= */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 12px;
-  padding: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 15px;
+  padding: 20px;
 }
 
-/* CARD */
 .card {
-  border: 1px solid #ddd;
+  background: #fff;
   border-radius: 10px;
   overflow: hidden;
-  background: white;
   cursor: pointer;
-  transition: 0.2s;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
 .card:hover {
-  transform: scale(1.03);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.2);
 }
 
 .card img {
@@ -221,319 +84,171 @@ header {
 }
 
 .card h3 {
+  padding: 10px;
   font-size: 14px;
   text-align: center;
-  padding: 8px;
 }
 
-/* estados */
 .card.reservado {
-  background: #ddd;
-  cursor: not-allowed;
-}
-
-.card.selecionado {
-  border: 2px solid #22c55e;
-}
-
-/* login */
-.modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.modal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-}
-
-/* carrinho */
-#carrinho-box {
-  background: white;
-  padding: 10px;
-  margin: 10px;
-  border-radius: 10px;
-}
-
-.card.pendente {
-  background: #fff3cd;
-  border: 2px dashed #ffc107;
-}
-
-/* ADMIN */
-#admin-area {
-  background: #fff;
-  margin: 10px;
-  padding: 10px;
-  border-radius: 10px;
-}
-
-.admin-item {
-  border-bottom: 1px solid #ddd;
-  padding: 8px 0;
-}
-
-.admin-item button {
-  margin-left: 10px;
-}
-
-/* reforço visual reservado */
-.card.reservado {
-  filter: grayscale(100%);
-  opacity: 0.7;
   position: relative;
+  pointer-events: none;
 }
 
 .card.reservado::after {
   content: "RESERVADO";
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) rotate(-20deg);
-  font-size: 18px;
+  top: 10px;
+  left: 10px;
+  background: rgba(220, 53, 69, 0.9);
+  color: #fff;
+  padding: 5px 8px;
+  font-size: 12px;
+  border-radius: 6px;
   font-weight: bold;
-  color: rgba(255,0,0,0.7);
 }
 
+.card.reservado img {
+  filter: grayscale(70%) brightness(0.7);
+}
+/* ================= CARRINHO ================= */
+#carrinho-box button,
+#copiar-pix,
+.admin-item button {
+  transition: all 0.2s ease;
+}
 
-#admin-dashboard {
-  background: #fff;
+#finalizar-btn {
+  background: #28a745;
+  color: #fff;
+}
+
+#finalizar-btn:hover {
+  background: #218838;
+  transform: scale(1.05);
+}
+
+#limpar-btn {
+  background: #dc3545;
+  color: #fff;
+}
+
+#limpar-btn:hover {
+  background: #c82333;
+  transform: scale(1.05);
+}
+
+#copiar-pix:hover {
+  background: #0056b3;
+  transform: scale(1.05);
+}
+
+#carrinho-box h3 {
+  margin-bottom: 10px;
+}
+
+#carrinho-lista {
+  margin-bottom: 10px;
+}
+
+#carrinho-box input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+#carrinho-box button {
   padding: 10px;
-  margin: 10px;
+  margin-right: 5px;
+  margin-top: 5px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#finalizar-btn {
+  background: #28a745;
+  color: #fff;
+}
+
+#limpar-btn {
+  background: #dc3545;
+  color: #fff;
+}
+
+/* ================= PIX ================= */
+#pix-area {
+  background: #fff;
+  margin: 20px;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+#pix-area textarea {
+  width: 100%;
+  margin-top: 10px;
+  font-family: monospace;
+}
+
+#copiar-pix {
+  margin-top: 10px;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  background: #007bff;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* QR CODE */
+#qrcode {
+  margin-top: 15px;
+  display: flex;
+  justify-content: center;
+}
+
+/* ================= ADMIN ================= */
+#admin-area {
+  background: #fff;
+  margin: 20px;
+  padding: 15px;
   border-radius: 10px;
 }
 
-.metrics {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-  font-weight: bold;
+.admin-item {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
 }
 
-/* ====================== NOVO CABEÇALHO ====================== */
-.header-principal {
-  background: linear-gradient(rgba(30, 58, 138, 0.85), rgba(30, 58, 138, 0.95)),
-              url('https://source.unsplash.com/random/1600x600/?soccer-stadium') center/cover no-repeat;
+.admin-item button {
+  margin-top: 5px;
+  padding: 6px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-pagar {
+  background: #28a745;
   color: white;
-  padding: 40px 20px 30px;
-  text-align: center;
-  margin-bottom: 20px;
-  border-radius: 0 0 16px 16px;
 }
 
-.header-content {
-  max-width: 1000px;
-  margin: 0 auto;
-}
-
-.header-principal h1 {
+.btn-remover {
+  background: #dc3545;
   color: white;
-  margin-bottom: 25px;
-  font-size: 2.2em;
-  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
 }
 
-.texto-motivacional {
-  max-width: 900px;
-  margin: 0 auto;
-  font-size: 1.08em;
-  line-height: 1.65;
-}
-
-.texto-motivacional p {
-  margin-bottom: 18px;
-}
-
-/* ====================== PIX DESTAQUE ====================== */
-.pix-destaque {
-  background: #fff;
-  padding: 25px 20px;
-  margin: 0 auto 30px;
-  max-width: 1100px;
-  border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-  text-align: center;
-}
-
-.pix-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 30px;
-}
-
-.qr-header {
-  width: 200px;
-  height: 200px;
-  border: 10px solid #1e3a8a;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-}
-
-.pix-info {
-  text-align: left;
-  min-width: 280px;
-}
-
-.pix-info h3 {
-  color: #1e3a8a;
-  font-size: 2em;
-  margin: 0 0 8px 0;
-}
-
-.pix-info p {
-  margin: 6px 0;
-  font-size: 1.1em;
-}
-
-.pix-info small {
-  color: #666;
-  font-size: 0.95em;
-}
-
-/* Responsivo */
+/* ================= MOBILE ================= */
 @media (max-width: 768px) {
-  .header-principal {
-    padding: 30px 15px;
-  }
-  .pix-container {
+  .header-container {
     flex-direction: column;
+    align-items: center;
+    text-align: center;
   }
-  .qr-header {
-    width: 170px;
-    height: 170px;
-  }
-}
-.header-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 15px;
-  margin-bottom: 20px;
-}
 
-.user-area {
-  text-align: right;
+.header-imagem {
+  align-items: flex-start;
 }
-
-.user-area p {
-  margin: 0 0 8px 0;
-  font-weight: bold;
-}
-
-.user-area button {
-  background: #ef4444;
-  color: white;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.9em;
-}
-
-
-/* ====================== CABEÇALHO ATUALIZADO ====================== */
-.header-principal {
-  background: linear-gradient(rgba(30, 58, 138, 0.9), rgba(30, 58, 138, 0.95)),
-              url('https://source.unsplash.com/random/1600x700/?soccer-field') center/cover no-repeat;
-  color: white;
-  padding: 40px 20px 30px;
-  margin-bottom: 25px;
-  border-radius: 0 0 16px 16px;
-}
-
-.header-content {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.header-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 15px;
-  margin-bottom: 25px;
-}
-
-.user-area {
-  text-align: right;
-}
-
-.user-area p {
-  margin: 5px 0;
-  font-weight: bold;
-}
-
-.user-area button {
-  background: #ef4444;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.95em;
-}
-
-.conteudo-principal {
-  display: grid;
-  grid-template-columns: 1fr 280px;
-  gap: 40px;
-  align-items: center;
-}
-
-.texto-motivacional {
-  font-size: 1.07em;
-  line-height: 1.7;
-}
-
-.texto-motivacional p {
-  margin-bottom: 16px;
-}
-
-.imagem-jl {
-  text-align: center;
-}
-
-.foto-jl {
-  width: 100%;
-  max-width: 280px;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
-  display: block;
-  margin: 0 auto;
-}
-
-/* Responsivo */
-@media (max-width: 900px) {
-  .conteudo-principal {
-    grid-template-columns: 1fr;
-    gap: 25px;
-  }
-  
-  .foto-jl {
-    max-width: 220px;
-    margin: 0 auto;
-  }
-}
-
-/* Nome do álbum no card */
-.album-name {
-  text-align: center;
-  margin: 4px 0 10px 0;
-  color: #1e3a8a;
-  font-size: 0.92em;
-  font-weight: 600;
-  opacity: 0.9;
-}
-
-.card h3 {
-  margin: 10px 0 4px 0;   /* reduz o espaço entre nome e álbum */
 }
