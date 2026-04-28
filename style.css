@@ -48,7 +48,7 @@ body {
 }
 
 .header-imagem img {
-  width: 100px; /* 🔥 controla tamanho real */
+  width: 120px; /* 🔥 controla tamanho real */
   height: auto;
   border-radius: 10px;
   object-fit: cover;
@@ -253,7 +253,7 @@ body {
   }
 
   .header-imagem img {
-    width: 80px; /* 🔥 menor no mobile */
+    width: 120px; /* 🔥 menor no mobile */
   }
 
   /* 🔥 GRID 2 COLUNAS */
@@ -264,7 +264,7 @@ body {
 /* EXTRA MOBILE PEQUENO */
 @media (max-width: 420px) {
   .header-imagem img {
-    width: 70px;
+    width: 90px;
   }
 
   .card img {
