@@ -79,8 +79,9 @@ body {
 
 .card img {
   width: 100%;
-  height: 120px; /* 🔥 menor */
+  height: 120px;
   object-fit: cover;
+  object-position: top; /* 🔥 ESSA É A CHAVE */
 }
 
 .card h3 {
