@@ -33,6 +33,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const adminStatus = document.getElementById("admin-status");
   const adminAddBtn = document.getElementById("admin-add");
 
+  // ===== FUNÇÃO NOVA (ÁLBUM) =====
+  function getNomeRifa(album) {
+    const NOMES_RIFAS = {
+      "1994": "Seleção 1994",
+      "2002": "Seleção 2002",
+      "2006": "Copa 2006",
+      "premier": "Premier League",
+    };
+
+    return NOMES_RIFAS[album] || album || "";
+  }
+
   // ===== TOAST =====
   function mostrarToast(msg) {
     const toast = document.createElement("div");
@@ -83,16 +95,14 @@ document.addEventListener("DOMContentLoaded", () => {
     renderCards();
   });
 
-  // ===== LISTENER ÚNICO =====
+  // ===== LISTENER =====
   db.ref('reservas').on('value', snap => {
-    const data = snap.val() || {};
-    selecoes = data;
-
+    selecoes = snap.val() || {};
     renderCards();
-    renderAdmin(data);
+    renderAdmin(selecoes);
   });
 
-  // ===== CARDS =====
+  // ===== CARDS (ALTERADO) =====
   function renderCards() {
     grid.innerHTML = "";
 
@@ -102,10 +112,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const card = document.createElement("div");
       card.className = `card ${reservado ? 'reservado' : ''}`;
 
-      card.innerHTML = `
-        <img src="${j.linkDrive || ''}" onerror="this.src='https://via.placeholder.com/300x200?text=Sem+Foto'">
-        <h3>${j.jogador}</h3>
-      `;
+card.innerHTML = `
+  <img src="${j.linkDrive || j.linkdrive}" alt="${j.jogador}">
+  <h3>${j.jogador}</h3>
+  <p class="album-name">${getNomeRifa(j.album)}</p>
+`;
 
       if (!reservado) {
         card.addEventListener("click", () => adicionarAoCarrinho(j));
@@ -116,19 +127,18 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ===== CARRINHO =====
-function adicionarAoCarrinho(j) {
-  if (carrinho.find(x => x.id === j.id)) return;
+  function adicionarAoCarrinho(j) {
+    if (carrinho.find(x => x.id === j.id)) return;
 
-  carrinho.push(j);
-  atualizarCarrinho();
+    carrinho.push(j);
+    atualizarCarrinho();
 
-  mostrarToast(`✔ ${j.jogador} adicionado`);
+    mostrarToast(`✔ ${j.jogador} adicionado`);
 
-  // 🔥 GOOGLE ANALYTICS
-  gtag('event', 'add_to_cart', {
-    item_name: j.jogador
-  });
-}
+    gtag('event', 'add_to_cart', {
+      item_name: j.jogador
+    });
+  }
 
   function atualizarCarrinho() {
     carrinhoLista.innerHTML = carrinho.map(j => `<li>${j.jogador}</li>`).join('');
@@ -193,7 +203,7 @@ function adicionarAoCarrinho(j) {
     mostrarToast("PIX copiado!");
   });
 
-  // ===== ADMIN RENDER =====
+  // ===== ADMIN =====
   function renderAdmin(data) {
     adminList.innerHTML = "";
     let total = 0;
@@ -221,7 +231,6 @@ function adicionarAoCarrinho(j) {
     adminTotal.textContent = total.toFixed(2);
   }
 
-  // ===== EVENT DELEGATION (ADMIN) =====
   adminList.addEventListener("click", (e) => {
     const btn = e.target.closest("button");
     if (!btn) return;
@@ -242,32 +251,6 @@ function adicionarAoCarrinho(j) {
     }
   });
 
-  // ===== INSERÇÃO MANUAL =====
-  adminAddBtn.addEventListener("click", () => {
-    const nome = adminNome.value.trim();
-    const whatsapp = adminWhatsapp.value.trim();
-    const jogador = adminJogador.value.trim();
-    const status = adminStatus.value;
-
-    if (!nome || !jogador) {
-      alert("Preencha nome e jogador");
-      return;
-    }
-
-    db.ref('reservas').push().set({
-      jogador,
-      nome,
-      whatsapp,
-      valor: 25,
-      status,
-      data: new Date().toISOString()
-    });
-
-    adminNome.value = "";
-    adminWhatsapp.value = "";
-    adminJogador.value = "";
-  });
-
   // ===== FINALIZAR =====
   function finalizarCompra() {
     if (!carrinho.length) return alert("Carrinho vazio");
@@ -277,14 +260,14 @@ function adicionarAoCarrinho(j) {
 
     if (!nome) return alert("Informe seu nome");
 
-const total = carrinho.length * 25;
-const codigoPix = gerarPix(total);
+    const total = carrinho.length * 25;
+    const codigoPix = gerarPix(total);
 
-// 🔥 GOOGLE ANALYTICS
-gtag('event', 'finalizar_compra', {
-  value: total,
-  currency: 'BRL'
-});
+    gtag('event', 'finalizar_compra', {
+      value: total,
+      currency: 'BRL'
+    });
+
     valorFinal.textContent = total.toFixed(2);
     pixCode.value = codigoPix;
     pixArea.style.display = "block";
@@ -311,11 +294,9 @@ Envio o comprovante em seguida.`;
     btnWhatsapp.href = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
     btnWhatsapp.style.display = "block";
 
-// 🔥 GOOGLE ANALYTICS
-btnWhatsapp.onclick = () => {
-  gtag('event', 'clique_whatsapp');
-};
-	
+    btnWhatsapp.onclick = () => {
+      gtag('event', 'clique_whatsapp');
+    };
 
     carrinho.forEach(j => {
       db.ref('reservas/' + j.id).transaction(current => {

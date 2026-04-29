@@ -86,7 +86,7 @@ body {
 
 .card h3 {
   padding: 6px;
-  font-size: 13px; /* 🔽 menor */
+  font-size: 14px; /* 🔽 menor */
   text-align: center;
 }
 
@@ -271,4 +271,45 @@ body {
   .card img {
     height: 110px;
   }
+}
+.card-img-wrapper {
+  position: relative;
+}
+
+.album-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: linear-gradient(to top, rgba(0,0,0,0.75), transparent);
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 6px 8px;
+}
+
+.card-img-wrapper {
+  position: relative;
+}
+
+.album-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+
+  background: linear-gradient(to top, rgba(0,0,0,0.75), transparent);
+  color: white;
+
+  font-size: 12px;
+  font-weight: bold;
+  padding: 6px 8px;
+}
+
+.album-name {
+  text-align: center;
+  font-size: 10px;
+  font-weight: 500;
+  color: #666;
+  margin: 0 0 8px 0;
 }
