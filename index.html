@@ -1,138 +1,229 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
+
   <meta charset="UTF-8">
+
   <title>Rifa JL 2026 ⚽</title>
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- PWA -->
+  <meta name="theme-color" content="#000000">
+
+  <link rel="manifest" href="manifest.json">
 
   <link rel="stylesheet" href="style.css">
 
-<!-- 🔥 GOOGLE ANALYTICS (GA4) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-WF2SH8YZFL"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  
-  gtag('js', new Date());
+  <!-- GA4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-WF2SH8YZFL"></script>
 
-  gtag('config', 'G-WF2SH8YZFL');
-</script>  
-  
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-WF2SH8YZFL');
+  </script>
+
 </head>
+
 <body>
 
-<header class="header-principal">
-  <div class="header-container">
+  <header class="header-principal">
 
-		<div class="header-texto">
-		  <h1 id="titulo">Rifa JL 2026 ⚽</h1>
+    <div class="header-container">
 
-		  <p><strong>Mais do que futebol, estamos construindo sonhos.</strong>💙</p>
-		  <p>Cada jogador escolhido é um passo na jornada de um jovem atleta — e você faz parte disso.</p>
-		  <p>Seu apoio transforma dedicação em oportunidade.</p>
-		  <p><strong>Entre em campo com a gente e faça parte desse time.</strong>⚽</p>
+      <div class="header-texto">
 
-		  <br>
+        <h1 id="titulo">Rifa JL 2026 ⚽</h1>
 
-		  <p><strong>Prêmio:</strong> Pix de <strong>R$ 300</strong></p>
-		  <p><strong>Valor por jogador:</strong> R$ 25,00</p>
+        <p>
+          <strong>
+            Mais do que futebol, estamos construindo sonhos.
+          </strong> 💙
+        </p>
 
-		  <a href="https://www.instagram.com/jlgol_2016/" target="_blank" style="color:white;" rel="noopener noreferrer">
-			Visite nosso Instagram
-		  </a>
-		</div>
+        <p>
+          Cada jogador escolhido é um passo na jornada de um jovem atleta — e você faz parte disso.
+        </p>
 
+        <p>
+          Seu apoio transforma dedicação em oportunidade.
+        </p>
 
-    <div class="header-imagem">
-      <img src="https://res.cloudinary.com/dsqoubhz5/image/upload/q_auto/f_auto/v1777384478/download_hnhnvr.jpg" alt="Jovem atleta">
+        <p>
+          <strong>
+            Entre em campo com a gente e faça parte desse time.
+          </strong> ⚽
+        </p>
+
+        <br>
+
+        <p>
+          <strong>Prêmio:</strong>
+          Pix de <strong>R$ 300</strong>
+        </p>
+
+        <p>
+          <strong>Valor por jogador:</strong>
+          R$ 25,00
+        </p>
+
+        <a
+          href="https://www.instagram.com/jlgol_2016/"
+          target="_blank"
+          rel="noopener noreferrer"
+          style="color:white;"
+        >
+          Visite nosso Instagram
+        </a>
+
+      </div>
+
+      <div class="header-imagem">
+
+        <img
+          src="https://res.cloudinary.com/dsqoubhz5/image/upload/q_auto/f_auto/v1777384478/download_hnhnvr.jpg"
+          alt="Jovem atleta"
+        >
+
+      </div>
+
     </div>
 
+  </header>
+
+  <!-- ADMIN -->
+  <div id="admin-area" style="display:none;">
+
+    <div class="admin-header">
+
+      <h2>🔒 Painel Administrativo</h2>
+
+      <p>
+        Gestão de reservas, confirmações e controle da rifa.
+      </p>
+
+    </div>
+
+    <div class="admin-dashboard">
+
+      <div class="admin-card">
+
+        <span>Total Arrecadado</span>
+
+        <strong>
+          R$ <span id="admin-total">0</span>
+        </strong>
+
+      </div>
+
+    </div>
+
+    <!-- FILTROS -->
+    <div class="admin-filtros">
+
+      <select id="filtro-album">
+        <option value="">Todos os álbuns</option>
+      </select>
+
+      <select id="filtro-jogador">
+        <option value="">Todos os jogadores</option>
+      </select>
+
+    </div>
+
+    <!-- LISTA -->
+    <div id="admin-list"></div>
+
   </div>
-</header>
 
-<!-- ADMIN -->
-<div id="admin-area" style="display:none;">
-  <h3>📊 Painel Administrativo</h3>
+  <!-- CARRINHO -->
+  <div id="carrinho-box">
 
-  <p><strong>Total arrecadado:</strong> R$ <span id="admin-total">0</span></p>
+    <h3>🛒 Carrinho</h3>
 
-  <!-- INSERÇÃO MANUAL -->
-  <h4>➕ Inserir compra manual</h4>
-  <input id="admin-nome" placeholder="Nome">
-  <input id="admin-whatsapp" placeholder="WhatsApp">
-  <input id="admin-jogador" placeholder="Nome do jogador">
-  
-  <select id="admin-status">
-    <option value="pago">Pago</option>
-    <option value="pendente">Pendente</option>
-  </select>
+    <ul id="carrinho-lista"></ul>
 
-  <button id="admin-add">Adicionar</button>
+    <p>
+      Total:
+      R$ <span id="carrinho-total">0</span>
+    </p>
 
-  <hr>
+    <input
+      id="checkout-nome"
+      placeholder="Seu nome"
+    >
 
-<div id="admin-stats" style="margin-bottom:15px;">
-  <p>💰 Total: R$ <span id="stat-total">0</span></p>
-  <p>🧾 Reservas: <span id="stat-reservas">0</span></p>
-  <p>⏳ Pendentes: <span id="stat-pendentes">0</span></p>
-  <p>✅ Pagos: <span id="stat-pagos">0</span></p>
-  <p>📈 Conversão: <span id="stat-conversao">0%</span></p>
-</div>
+    <input
+      id="checkout-whatsapp"
+      placeholder="WhatsApp (11 dígitos)"
+      maxlength="11"
+    >
 
-  <!-- LISTA -->
-  <div id="admin-list"></div>
-</div>
+    <button id="finalizar-btn">
+      Finalizar Compra
+    </button>
 
-<!-- CARRINHO -->
-<div id="carrinho-box">
-  <h3>🛒 Carrinho</h3>
-  <ul id="carrinho-lista"></ul>
-  <p>Total: R$ <span id="carrinho-total">0</span></p>
+    <button id="limpar-btn">
+      Limpar
+    </button>
 
-  <input id="checkout-nome" placeholder="Seu nome">
-  <input id="checkout-whatsapp" placeholder="WhatsApp (11 dígitos)" maxlength="11">
+  </div>
 
-  <button id="finalizar-btn">Finalizar Compra</button>
-  <button id="limpar-btn">Limpar</button>
-</div>
+  <!-- PIX -->
+  <div id="pix-area" style="display:none;">
 
-<!-- PIX -->
-<div id="pix-area" style="display:none;">
-  <h3>💸 Pagamento via PIX</h3>
-  <p>Total: R$ <span id="valor-final">0</span></p>
+    <h3>💸 Pagamento via PIX</h3>
 
-  <textarea id="pix-code" readonly></textarea>
+    <p>
+      Total:
+      R$ <span id="valor-final">0</span>
+    </p>
 
-  <button id="copiar-pix">Copiar PIX</button>
+    <textarea id="pix-code" readonly></textarea>
 
-  <div id="qrcode"></div>
+    <button id="copiar-pix">
+      Copiar PIX
+    </button>
 
-  <!-- WHATSAPP -->
-  <a id="btn-whatsapp" target="_blank" style="display:none;">
-    <button>📲 Enviar comprovante no WhatsApp</button>
-  </a>
-</div>
+    <div id="qrcode"></div>
 
-<!-- GRID -->
-<div id="grid" class="grid"></div>
+    <a id="btn-whatsapp" target="_blank" style="display:none;">
 
-<!-- FIREBASE -->
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-<script src="firebase-config.js"></script>
+      <button>
+        📲 Enviar comprovante no WhatsApp
+      </button>
 
-<!-- QR CODE -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    </a>
 
-<!-- UTILS -->
-<script src="utils.js"></script>
+  </div>
 
-<!-- APP -->
-<script src="app.js"></script>
+  <!-- GRID -->
+  <div id="grid" class="grid"></div>
 
-<footer style="text-align:center; padding:15px; font-size:12px; color:#666;">
-  Este site utiliza cookies para melhorar sua experiência.
-</footer>
+  <!-- FIREBASE -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+  <script src="firebase-config.js"></script>
+
+  <!-- QRCode -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <!-- Utils -->
+  <script src="utils.js"></script>
+
+  <!-- App -->
+  <script src="app.js"></script>
 
 </body>
+
 </html>
