@@ -8,17 +8,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout do repositório
       - name: Checkout do código
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
+      # Configuração do Node.js
       - name: Configurar Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18
+          cache: npm
 
+      # Instalação das dependências
       - name: Instalar dependências
         run: npm install
 
+      # Execução do script
       - name: Executar script
         run: node index.js
         env:
@@ -26,8 +31,11 @@ jobs:
           API_KEY: ${{ secrets.API_KEY }}
           API_SECRET: ${{ secrets.API_SECRET }}
 
+      # Upload do arquivo gerado
       - name: Salvar resultado como artefato
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: links
           path: links.json
+          if-no-files-found: error
+          retention-days: 7
